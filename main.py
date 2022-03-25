@@ -8,7 +8,7 @@ from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 import os
 import base64
 
-watermark = "/assets/legallais_watermark.pdf"
+watermark = "/assets/watermark.pdf"
 output_dir = "/watermark"
 
 class Reader:
