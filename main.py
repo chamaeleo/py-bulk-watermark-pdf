@@ -8,21 +8,23 @@ from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 import os
 import base64
 
-watermark = "/assets/legallais_watermark.pdf"
-output_dir = "/watermark"
+watermark = "watermark.pdf"
+input_dir = "pdf_to_watermark"
+output_dir = "watermarked"
 
 class Reader:
 
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str, input_dir: str) -> None:
         # Get the current working directory
         self.path = path
+        self.input_dir = input_dir
         self.files = []
 
     def getPDFs(self) -> []:
         print("\n--- Listing PDFs in : " + self.path + " ---\n")
         
         # List files from cwd
-        for file in os.listdir(cwd):
+        for file in os.listdir(self.path + self.input_dir):
             file_name, file_extension = os.path.splitext(file)
             
             # Only process PDF
@@ -34,9 +36,10 @@ class Reader:
 
 class Writer:
 
-    def __init__(self, path: str, watermark : str, output_dir : str) -> None:
+    def __init__(self, path: str, watermark : str, input_dir: str,  output_dir : str) -> None:
         # Get the current working directory
         self.path = path
+        self.input_dir = input_dir
         self.output_dir = output_dir
         watermark_path = self.path + watermark
         try :
@@ -52,7 +55,7 @@ class Writer:
     def watermark(self, file: str) -> None:
         print("Adding watermark to : " + file)
         try:
-            input_pdf = PdfFileReader(open(file, "rb"), strict=False)
+            input_pdf = PdfFileReader(open(self.input_dir + "/" + file, "rb"), strict=False)
             output_pdf = PdfFileWriter()
             print("Pages : " + str(input_pdf.getNumPages()))
             # For each page add watermark
@@ -81,8 +84,8 @@ class Writer:
         print("\nAll done! Wartermarked files are in " + self.path + self.output_dir )
 
 if __name__ == '__main__':
-    cwd = os.getcwd() # Get current working directory
-    writer = Writer(cwd, watermark, output_dir) # Init CWD
-    reader = Reader(cwd) # Init Reader
+    cwd = os.getcwd() + "/" # Get current working directory
+    writer = Writer(cwd, watermark, input_dir, output_dir) # Init CWD
+    reader = Reader(cwd, input_dir) # Init Reader
     pdfs = reader.getPDFs()
     writer.worker_watermark(pdfs)
